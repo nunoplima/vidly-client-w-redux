@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import _ from "lodash";
+import ListGroup from "./common/ListGroup";
 import MoviesTable from "./MoviesTable";
 import Pagination from "./common/Pagination";
 import {
@@ -9,53 +9,65 @@ import {
     toggleLikeMovie,
     selectPage,
     toggleSort,
+    getSortedMoviesByGenre
 } from "../store/movies";
+import { getGenres, selectGenre } from "../store/genres";
 
 const Movies = () => {
     const dispatch = useDispatch();
-    const { list: movies, pageSize, currentPage, sortColumn } = useSelector(
-        (state) => state.enteties.movies
-    );
+    const movies = useSelector(getSortedMoviesByGenre);
+    const { pageSize, currentPage, sortColumn } = useSelector(state => state.enteties.movies);
+    const { list: genres, selectedGenre } = useSelector(state => state.enteties.genres);
 
     useEffect(() => {
+        dispatch(getGenres());
         dispatch(getMovies());
     }, [dispatch]);
 
-    const handlePageChange = (page) => dispatch(selectPage(page));
+    const handlePageChange = page => dispatch(selectPage(page));
 
-    const handleDelete = (movieId) => dispatch(deleteMovie(movieId));
+    const handleDelete = movieId => dispatch(deleteMovie(movieId));
 
-    const handleLike = (movieId) => dispatch(toggleLikeMovie(movieId));
+    const handleLike = movieId => dispatch(toggleLikeMovie(movieId));
 
-    const handleSort = (sortColumn) => dispatch(toggleSort(sortColumn));
+    const handleSort = sortColumn => dispatch(toggleSort(sortColumn));
+
+    const handleGenreChange = genre => {
+        dispatch(selectGenre(genre));
+        handlePageChange(1);
+    };
 
     const itemsCount = movies.length;
-
-    const sortedMovies = _.orderBy(movies, sortColumn.path, sortColumn.order);
-    const moviesInPage = sortedMovies.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-    );
+    
+    const moviesInPage = movies.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     return (
-        <>
-            {itemsCount > 0 && <p>Showing {itemsCount} in the database.</p>}
-
-            <MoviesTable
-                movies={moviesInPage}
-                sortColumn={sortColumn}
-                onDelete={handleDelete}
-                onLike={handleLike}
-                onSort={handleSort}
+        <div className="row mt-5">
+            <ListGroup 
+                data={[{ name: "All genres" }, ...genres]} 
+                selected={selectedGenre} 
+                onChange={handleGenreChange} 
             />
 
-            <Pagination
-                itemsCount={itemsCount}
-                pageSize={pageSize}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-            />
-        </>
+            <div className="col ml-5">
+                {itemsCount > 0 && <p>Showing {itemsCount} in the database.</p>}
+
+                <MoviesTable
+                    movies={moviesInPage}
+                    sortColumn={sortColumn}
+                    onDelete={handleDelete}
+                    onLike={handleLike}
+                    onSort={handleSort}
+                />
+
+                <Pagination
+                    itemsCount={itemsCount}
+                    pageSize={pageSize}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
+            </div>
+        </div>
     );
 };
 

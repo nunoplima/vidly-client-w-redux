@@ -40,7 +40,7 @@ const MoviesTable = ({ movies, onDelete, onLike, onSort }) => {
 
             <THead columns={columns} sortColumn={sortColumn} onSort={onSort} />
 
-            <TBody movies={movies} columns={columns} onDelete={onDelete} onLike={onLike} />
+            <TBody data={movies} columns={columns} onDelete={onDelete} onLike={onLike} />
         
         </table>
     );

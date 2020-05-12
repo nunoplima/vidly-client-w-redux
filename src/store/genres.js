@@ -5,14 +5,20 @@ import { baseUrl } from "./config.json";
 
 const genresSlice = createSlice({
     name: "genres",
-    initialState: [],
+    initialState: { list: [], selectedGenre: { name: "All genres" } },
     reducers: {
-        genresRecieved: (state, action) => action.payload.genres
+        genresRecieved: (genres, action) => {
+            genres.list = action.payload.genres;
+        },
+
+        selectedGenre: (genres, action) => {
+            genres.selectedGenre = action.payload;
+        }
     }
 });
 
 export default genresSlice.reducer;
-const { genresRecieved } = genresSlice.actions;
+const { genresRecieved, selectedGenre } = genresSlice.actions;
 
 // actions creators
 export const getGenres = () => (
@@ -22,3 +28,5 @@ export const getGenres = () => (
         onSuccess: genresRecieved.type
     })
 );
+
+export const selectGenre = genre => selectedGenre(genre);
