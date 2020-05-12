@@ -1,8 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import Like from "./common/Like";
-import THead from "./common/THead";
-import TBody from "./common/TBody";
+import Table from "./common/Table";
 
 const MoviesTable = ({ movies, onDelete, onLike, onSort }) => {
     const { sortColumn } = useSelector((state) => state.enteties.movies);
@@ -14,7 +13,7 @@ const MoviesTable = ({ movies, onDelete, onLike, onSort }) => {
         { path: "dailyRentalRate", label: "Rate" },
         {
             key: "like",
-            content: movie => (
+            content: (movie) => (
                 <Like
                     isLiked={movie.liked}
                     itemId={movie._id}
@@ -24,7 +23,7 @@ const MoviesTable = ({ movies, onDelete, onLike, onSort }) => {
         },
         {
             key: "delete",
-            content: movie => (
+            content: (movie) => (
                 <button
                     onClick={() => onDelete(movie._id)}
                     className="btn btn-danger"
@@ -36,13 +35,12 @@ const MoviesTable = ({ movies, onDelete, onLike, onSort }) => {
     ];
 
     return (
-        <table className="table">
-
-            <THead columns={columns} sortColumn={sortColumn} onSort={onSort} />
-
-            <TBody data={movies} columns={columns} onDelete={onDelete} onLike={onLike} />
-        
-        </table>
+        <Table
+            data={movies}
+            columns={columns}
+            sortColumn={sortColumn}
+            onSort={onSort}
+        />
     );
 };
 
