@@ -1,6 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
+import _ from "lodash";
 import { apiCallBegan } from "./api";
 import { baseUrl } from "./config.json";
+
 
 const moviesSlice = createSlice({
     name: "movies",
@@ -76,3 +79,22 @@ export const toggleLikeMovie = (_id) =>
 export const selectPage = (page) => pageSelected(page);
 
 export const toggleSort = (sortColumn) => sortToggled(sortColumn);
+
+// selectors 
+const filter = (movies, genre) => (
+    movies.filter(movie => {
+        if (!genre._id) return true;
+        return movie.genre.name === genre.name;
+    })
+); 
+
+export const getSortedMoviesByGenre = createSelector(
+    state => state.enteties.movies,
+    state => state.enteties.genres.selectedGenre,
+    ({ list: movies, sortColumn: { path, order } }, genre) => {
+        const filteredMovies = filter(movies, genre);
+        const sortedMovies = _.orderBy(filteredMovies, path, order);
+        return sortedMovies;
+    }
+);
+

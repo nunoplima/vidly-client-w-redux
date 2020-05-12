@@ -5,7 +5,7 @@ const Pagination = ({ itemsCount, pageSize, currentPage, onPageChange }) => {
     pagesArr.map((el, i) => (pagesArr[i] = i + 1));
     // or lodash range
 
-    if (itemsCount < pageSize) return null;
+    if (itemsCount <= pageSize) return null;
 
     return (
         <nav aria-label="Page navigation example">
