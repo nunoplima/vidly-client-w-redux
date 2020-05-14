@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ListGroup from "./common/ListGroup";
 import MoviesTable from "./MoviesTable";
 import Pagination from "./common/Pagination";
+import SearchBox from "./SearchBox";
 import {
     getMovies,
     deleteMovie,
@@ -12,12 +13,16 @@ import {
     getSortedMoviesByGenre
 } from "../store/movies";
 import { getGenres, selectGenre } from "../store/genres";
+import { searchQuery } from "../store/search";
+import { allGenres } from "../constants";
 
 const Movies = () => {
     const dispatch = useDispatch();
     const movies = useSelector(getSortedMoviesByGenre);
     const { pageSize, currentPage, sortColumn } = useSelector(state => state.enteties.movies);
     const { list: genres, selectedGenre } = useSelector(state => state.enteties.genres);
+    const query = useSelector(state => state.search);
+
 
     useEffect(() => {
         dispatch(getGenres());
@@ -33,7 +38,16 @@ const Movies = () => {
     const handleSort = sortColumn => dispatch(toggleSort(sortColumn));
 
     const handleGenreChange = genre => {
+        dispatch(searchQuery(""));
         dispatch(selectGenre(genre));
+        handlePageChange(1);
+    };
+
+    const handleSearch = query => {
+        if (selectedGenre._id) {
+            dispatch(selectGenre(allGenres));
+        }
+        dispatch(searchQuery(query));
         handlePageChange(1);
     };
 
@@ -44,13 +58,15 @@ const Movies = () => {
     return (
         <div className="row mt-5">
             <ListGroup 
-                data={[{ name: "All genres" }, ...genres]} 
+                data={[allGenres, ...genres]} 
                 selected={selectedGenre} 
                 onChange={handleGenreChange} 
             />
 
             <div className="col ml-5">
-                {itemsCount > 0 && <p>Showing {itemsCount} in the database.</p>}
+                {itemsCount > 0 ? <p>Showing {itemsCount} in the database.</p> : <p>No videos in the database</p>}
+
+                <SearchBox onChange={handleSearch} value={query} />
 
                 <MoviesTable
                     movies={moviesInPage}

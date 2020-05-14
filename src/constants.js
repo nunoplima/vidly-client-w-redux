@@ -1,0 +1,1 @@
+export const allGenres = { name: "All genres" };
