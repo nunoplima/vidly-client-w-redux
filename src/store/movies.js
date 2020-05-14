@@ -81,18 +81,23 @@ export const selectPage = (page) => pageSelected(page);
 export const toggleSort = (sortColumn) => sortToggled(sortColumn);
 
 // selectors 
-const filter = (movies, genre) => (
-    movies.filter(movie => {
-        if (!genre._id) return true;
-        return movie.genre.name === genre.name;
-    })
-); 
+const filter = (movies, genre, query) => {
+    if (query.length) {
+        return movies.filter(movie => movie.title.toLowerCase().startsWith(query.toLowerCase()));
+    }   
+    if (genre._id) {
+        return movies.filter(movie => movie.genre.name === genre.name);
+    }
+    return movies;
+};
+
 
 export const getSortedMoviesByGenre = createSelector(
     state => state.enteties.movies,
     state => state.enteties.genres.selectedGenre,
-    ({ list: movies, sortColumn: { path, order } }, genre) => {
-        const filteredMovies = filter(movies, genre);
+    state => state.search,
+    ({ list: movies, sortColumn: { path, order } }, genre, query) => {
+        const filteredMovies = filter(movies, genre, query);
         const sortedMovies = _.orderBy(filteredMovies, path, order);
         return sortedMovies;
     }

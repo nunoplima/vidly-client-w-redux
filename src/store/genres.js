@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiCallBegan } from "./api";
 import { baseUrl } from "./config.json";
+import { allGenres } from "../constants";
 
 
 const genresSlice = createSlice({
     name: "genres",
-    initialState: { list: [], selectedGenre: { name: "All genres" } },
+    initialState: { list: [], selectedGenre: allGenres },
     reducers: {
         genresRecieved: (genres, action) => {
             genres.list = action.payload.genres;

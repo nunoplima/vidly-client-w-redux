@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import Like from "./common/Like";
 import Table from "./common/Table";
 
@@ -7,13 +8,19 @@ const MoviesTable = ({ movies, onDelete, onLike, onSort }) => {
     const { sortColumn } = useSelector((state) => state.enteties.movies);
 
     const columns = [
-        { path: "title", label: "Title" },
+        {
+            path: "title",
+            label: "Title",
+            content: movie => (
+                <Link to={`/movies/${movie._id}`}>{movie.title}</Link>
+            ),
+        },
         { path: "genre.name", label: "Genre" },
         { path: "numberInStock", label: "Stock" },
         { path: "dailyRentalRate", label: "Rate" },
         {
             key: "like",
-            content: (movie) => (
+            content: movie => (
                 <Like
                     isLiked={movie.liked}
                     itemId={movie._id}
@@ -23,7 +30,7 @@ const MoviesTable = ({ movies, onDelete, onLike, onSort }) => {
         },
         {
             key: "delete",
-            content: (movie) => (
+            content: movie => (
                 <button
                     onClick={() => onDelete(movie._id)}
                     className="btn btn-danger"
