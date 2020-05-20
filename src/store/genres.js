@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiCallBegan } from "./api";
-import { baseUrl } from "./config.json";
+import { baseUrl } from "../constants";
 import { allGenres } from "../constants";
 
 

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import _ from "lodash";
 import { apiCallBegan } from "./api";
-import { baseUrl } from "./config.json";
+import { baseUrl } from "../constants";
 
 
 const moviesSlice = createSlice({
@@ -18,11 +18,15 @@ const moviesSlice = createSlice({
             movies.list = action.payload.movies;
         },
 
+        moviesRestored: (movies, action) => {
+            movies.list = action.payload.movies;
+        },
+
         movieDeleted: (movies, action) => {
             movies.list = movies.list.filter(
                 (movie) => movie._id !== action.payload._id
             );
-        },
+        },    
 
         movieLikeToggled: (movies, action) => {
             const { movie: editedMovie } = action.payload;
@@ -45,6 +49,7 @@ const moviesSlice = createSlice({
 export default moviesSlice.reducer;
 const {
     moviesRecieved,
+    moviesRestored,
     movieDeleted,
     movieLikeToggled,
     pageSelected,
@@ -59,14 +64,18 @@ export const getMovies = () =>
         onSuccess: moviesRecieved.type,
     });
 
-export const deleteMovie = (_id) =>
-    apiCallBegan({
-        baseUrl,
-        url: `/api/movies/${_id}`,
-        method: "delete",
-        onSuccess: movieDeleted.type,
-        payload: { _id },
-    });
+export const restoreMovies = (movies) => moviesRestored({ movies });
+
+// export const deleteMovie = (_id) =>
+//     apiCallBegan({
+//         baseUrl,
+//         url: `/api/movies/${_id}`,
+//         method: "delete",
+//         onSuccess: movieDeleted.type,
+//         payload: { _id },
+//     });
+
+export const deleteMovie = (_id) => movieDeleted({ _id });
 
 export const toggleLikeMovie = (_id) =>
     apiCallBegan({
@@ -90,7 +99,6 @@ const filter = (movies, genre, query) => {
     }
     return movies;
 };
-
 
 export const getSortedMoviesByGenre = createSelector(
     state => state.enteties.movies,

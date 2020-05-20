@@ -3,15 +3,17 @@ import Joi from "joi-browser";
 import Form from "./common/Form";
 
 const Login = () => {
-    const [account, setAccount] = useState({ email: "", password: "" });
+    const [account, setAccount] = useState({ username: "", email: "", password: "" });
     const [errors, setErrors] = useState({});
 
     const schema = {
+        username: Joi.string().min(3).max(12).required().label("Username"),
         email: Joi.string().email().required().label("Email"),
         password: Joi.string().min(4).max(12).required().label("Password"),
     };
 
     const inputs = [
+        { name: "username", type: "text", label: "Username", tag: "input" },
         { name: "email", type: "email", label: "E-mail adress", tag: "input" },
         { name: "password", type: "password", label: "Password", tag: "input" },
     ];
@@ -22,10 +24,10 @@ const Login = () => {
 
     return (
         <>
-            <h1>Login</h1>
+            <h1>Register</h1>
 
             <Form
-                submitText="Login"
+                submitText="Register"
                 schema={schema}
                 inputs={inputs}
                 data={account}
