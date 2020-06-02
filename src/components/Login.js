@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { Redirect } from "react-router-dom";
 import Joi from "joi-browser";
 import Form from "./common/Form";
+import auth from "../services/authService";
 
-const Login = () => {
+const Login = ({ location }) => {
     const [account, setAccount] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({});
 
@@ -16,24 +18,38 @@ const Login = () => {
         { name: "password", type: "password", label: "Password", tag: "input" },
     ];
 
-    const handleSubmit = () => {
-        console.log("Submitted");
+    const handleSubmit = async () => {
+        try {
+            await auth.login(account);
+            window.location = location.state ? location.state.redirectPath : "/";
+        } catch (ex) {
+            if (ex.response && ex.response.status === 400) {
+                const { error } = ex.response.data;
+                setErrors({ ...errors, email: error });
+            }
+        }
     };
 
     return (
         <>
-            <h1>Login</h1>
+            {!auth.getCurrentUser() ? (
+                <>
+                    <h1>Login</h1>
 
-            <Form
-                submitText="Login"
-                schema={schema}
-                inputs={inputs}
-                data={account}
-                errors={errors}
-                setData={setAccount}
-                setErrors={setErrors}
-                onSubmit={handleSubmit}
-            />
+                    <Form
+                        submitText="Login"
+                        schema={schema}
+                        inputs={inputs}
+                        data={account}
+                        errors={errors}
+                        setData={setAccount}
+                        setErrors={setErrors}
+                        onSubmit={handleSubmit}
+                    />
+                </>
+            ) : (
+                <Redirect to="/movies" />
+            )}
         </>
     );
 };

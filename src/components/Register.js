@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import Joi from "joi-browser";
 import Form from "./common/Form";
+import auth from "../services/authService";
 
-const Login = () => {
+const Register = () => {
     const [account, setAccount] = useState({ username: "", email: "", password: "" });
     const [errors, setErrors] = useState({});
 
@@ -18,8 +19,16 @@ const Login = () => {
         { name: "password", type: "password", label: "Password", tag: "input" },
     ];
 
-    const handleSubmit = () => {
-        console.log("Submitted");
+    const handleSubmit = async () => {
+        try {
+            await auth.register(account);
+            window.location = "/";
+        } catch(ex) {
+            if (ex.response && ex.response.status === 400) {
+                const { error } = ex.response.data;
+                setErrors({ ...errors, email: error});
+            }
+        }
     };
 
     return (
@@ -40,4 +49,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Register;
