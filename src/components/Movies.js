@@ -27,6 +27,7 @@ const Movies = () => {
     const { pageSize, currentPage, sortColumn } = useSelector(state => state.enteties.movies);
     const { list: genres, selectedGenre } = useSelector(state => state.enteties.genres);
     const query = useSelector(state => state.search);
+    const { user } = useSelector(state => state.enteties);
 
     useEffect(() => {
         dispatch(getGenres());
@@ -39,9 +40,10 @@ const Movies = () => {
         try {
             dispatch(deleteMovie(movieId));
             await deleteMovieCall(movieId);
-        } catch(e) {
-            if (e.response && e.response.status === 404) {
-                toast.error("Movie already deleted");
+        } catch(ex) {
+            if (ex.response && (ex.response.status === 403 || ex.response.status === 404)) {
+                const { error } = ex.response.data; 
+                toast.error(error);
                 dispatch(restoreMovies(moviesBackup));
             }
         }
@@ -80,7 +82,7 @@ const Movies = () => {
             />
 
             <div className="col ml-5">
-                <Button classes="btn btn-primary mb-5" label="New movie" />
+                {Object.keys(user).length > 0 && <Button classes="btn btn-primary mb-3" label="New movie" />}
 
                 {itemsCount > 0 ? <p>Showing {itemsCount} in the database.</p> : <p>No videos in the database</p>}
 

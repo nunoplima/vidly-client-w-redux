@@ -18,11 +18,12 @@ const MovieForm = ({ match, history }) => {
     useEffect(() => {
         dispatch(getGenres()); 
         populateMovie();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     
     const populateMovie = async() => {
         const { movieId } = match.params; 
-        if (movieId) {
+        if (movieId && movieId !== "new") {
             try {
                 dispatch(toggleLoading(true));
                 const { data } = await getMovieCall(movieId);

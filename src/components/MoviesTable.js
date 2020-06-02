@@ -5,6 +5,7 @@ import Like from "./common/Like";
 import Table from "./common/Table";
 
 const MoviesTable = ({ movies, onDelete, onLike, onSort }) => {
+    const user = useSelector(state => state.enteties.user);
     const { sortColumn } = useSelector((state) => state.enteties.movies);
 
     const columns = [
@@ -28,18 +29,21 @@ const MoviesTable = ({ movies, onDelete, onLike, onSort }) => {
                 />
             ),
         },
-        {
-            key: "delete",
-            content: movie => (
-                <button
-                    onClick={() => onDelete(movie._id)}
-                    className="btn btn-danger"
-                    type="submit">
-                    Delete
-                </button>
-            ),
-        },
     ];
+
+    const deleteColumn = {
+        key: "delete",
+        content: movie => (
+            <button
+                onClick={() => onDelete(movie._id)}
+                className="btn btn-danger"
+                type="submit">
+                Delete
+            </button>
+        ),
+    };
+
+    if (Object.keys(user).length > 0) columns.push(deleteColumn);
 
     return (
         <Table
